@@ -28,11 +28,6 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({ className, ...props }) =
       name: "Aspect Ratio Calculator (Old)",
       href: "/tools/aspectratioold",
       icon: Proportions
-    },
-    {
-      name: "Settings",
-      href: "/settings",
-      icon: Settings
     }
   ];
 
