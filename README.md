@@ -74,7 +74,7 @@ Ensure you have:
 This project uses shadcn/ui components. To add new components:
 
 ```bash
-npx shadcn@latest add [component-name]
+npx shadcn@latest add button [component-name]
 ```
 
 Available components in the project:

@@ -10,7 +10,8 @@ node_modules
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+package-lock.json
+yarn.lock
 # testing
 /coverage
 
