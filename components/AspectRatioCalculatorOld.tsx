@@ -59,7 +59,7 @@ const AspectRatioCalculator: React.FC = () => {
     height: 900
   });
 
-  const [targetRatio, setTargetRatio] = useState<number>(2.35);
+  const [targetRatio] = useState<number>(2.35);
   const [analysis, setAnalysis] = useState<AspectRatioAnalysis | null>(null);
   const [boxCalc, setBoxCalc] = useState<BoxCalculation | null>(null);
   const [cropSuggestion, setCropSuggestion] = useState<CropSuggestion | null>(null);
