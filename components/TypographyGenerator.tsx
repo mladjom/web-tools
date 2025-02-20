@@ -1,11 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Copy } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useToast } from '@/components/ui/useToast'
 
 interface Settings {
   baseFontSize: number;
@@ -60,31 +63,33 @@ const TypographyGenerator: React.FC = () => {
   const [output, setOutput] = useState<Output>({
     css: '',
     scss: '',
-    scale: []
+    scale: [],
   });
 
-  const calculateLineHeight = (fontSize: number): number => {
+  const { toast, Toaster } = useToast();
+
+  const calculateLineHeight = useCallback((fontSize: number): number => {
     if (fontSize < 16) return 1.6;
     else if (fontSize >= 16 && fontSize <= 24) return 1.5;
     else if (fontSize > 24 && fontSize <= 32) return 1.3;
     else return 1.2;
-  };
+  }, []);
 
-  const calculateLetterSpacing = (fontSize: number, isHeading: boolean = false): number => {
+  const calculateLetterSpacing = useCallback((fontSize: number, isHeading: boolean = false): number => {
     if (isHeading) return fontSize > 32 ? -0.02 : -0.01;
     else return fontSize < 16 ? 0.015 : 0;
-  };
+  }, []);
 
-  const calculateRhythm = (fontSize: number, lineHeight: number): RhythmValues => {
+  const calculateRhythm = useCallback((fontSize: number, lineHeight: number): RhythmValues => {
     const baseRhythm = Math.round(fontSize * lineHeight);
     return {
       single: baseRhythm,
       half: baseRhythm / 2,
       double: baseRhythm * 2,
     };
-  };
+  }, []);
 
-  const generateScale = (): ScaleItem[] => {
+  const generateScale = useCallback((): ScaleItem[] => {
     const scale: ScaleItem[] = [];
     for (let i = -2; i <= 8; i++) {
       const size = settings.baseFontSize * Math.pow(settings.scaleRatio, i);
@@ -104,13 +109,13 @@ const TypographyGenerator: React.FC = () => {
           single: (rhythm.single / 16).toFixed(3),
           half: (rhythm.half / 16).toFixed(3),
           double: (rhythm.double / 16).toFixed(3),
-        }
+        },
       });
     }
     return scale;
-  };
+  }, [settings, calculateLineHeight, calculateLetterSpacing, calculateRhythm]);
 
-  const generateCSS = (scale: ScaleItem[]): string => {
+  const generateCSS = useCallback((scale: ScaleItem[]): string => {
     return `:root {
   /* Base Values */
   --base-font-size: ${settings.baseFontSize}px;
@@ -131,9 +136,9 @@ ${scale.map(s => `
   /* Spacing Scale */
 ${Array.from({ length: 8 }, (_, i) => `  --space-${i + 1}: ${(settings.baseUnit * (i + 1)) / 16}rem;`).join('\n')}
 }`;
-  };
+  }, [settings]);
 
-  const generateSCSS = (scale: ScaleItem[]): string => {
+  const generateSCSS = useCallback((scale: ScaleItem[]): string => {
     return `// Typography System
 $base-font-size: ${settings.baseFontSize}px;
 $base-line-height: ${settings.baseLineHeight};
@@ -149,19 +154,30 @@ $tracking-${s.step}: ${s.letterSpacing}em;
 $rhythm-${s.step}: ${s.rhythm.single}rem;
 $rhythm-${s.step}-half: ${s.rhythm.half}rem;
 $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
-  };
+  }, [settings]);
 
   useEffect(() => {
     const scale = generateScale();
     setOutput({
       scale,
       css: generateCSS(scale),
-      scss: generateSCSS(scale)
+      scss: generateSCSS(scale),
     });
-  }, [settings]);
+  }, [settings, generateScale, generateCSS, generateSCSS]);
 
   const handleChange = (key: keyof Settings, value: string) => {
-    setSettings(prev => ({ ...prev, [key]: parseFloat(value) }));
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue > 0) {
+      setSettings(prev => ({ ...prev, [key]: numValue }));
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied!",
+      description: "The code has been copied to your clipboard.",
+    });
   };
 
   return (
@@ -200,6 +216,29 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="baseLineHeight">Base Line Height</Label>
+            <Input
+              id="baseLineHeight"
+              type="number"
+              step="0.1"
+              value={settings.baseLineHeight}
+              onChange={(e) => handleChange('baseLineHeight', e.target.value)}
+              min="1"
+              max="2"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="baseUnit">Base Unit (px)</Label>
+            <Input
+              id="baseUnit"
+              type="number"
+              value={settings.baseUnit}
+              onChange={(e) => handleChange('baseUnit', e.target.value)}
+              min="4"
+              max="16"
+            />
+          </div>
         </div>
 
         <Tabs defaultValue="preview" className="mt-6">
@@ -227,6 +266,7 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
                         letterSpacing: `${size.letterSpacing}em`,
                         marginBottom: `${size.rhythm.single}rem`
                       }}
+                      aria-label={`Text sample for step ${size.step}`}
                     >
                       The quick brown fox
                     </div>
@@ -242,18 +282,39 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
           </TabsContent>
 
           <TabsContent value="css">
-            <pre className="p-4 bg-muted rounded-lg overflow-auto">
-              <code>{output.css}</code>
-            </pre>
+            <div className="flex items-start gap-2">
+              <pre className="p-4 bg-muted rounded-lg overflow-auto font-mono text-sm flex-1">
+                <code>{output.css}</code>
+              </pre>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => copyToClipboard(output.css)}
+                aria-label="Copy CSS to clipboard"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
           </TabsContent>
 
           <TabsContent value="scss">
-            <pre className="p-4 bg-muted rounded-lg overflow-auto">
-              <code>{output.scss}</code>
-            </pre>
+            <div className="flex items-start gap-2">
+              <pre className="p-4 bg-muted rounded-lg overflow-auto font-mono text-sm flex-1">
+                <code>{output.scss}</code>
+              </pre>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => copyToClipboard(output.scss)}
+                aria-label="Copy SCSS to clipboard"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>
+      <Toaster />
     </Card>
   );
 };
