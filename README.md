@@ -41,7 +41,7 @@ A collection of useful web development tools built with Next.js and shadcn/ui co
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:mladjom/web-tools.git
 ```
 
 2. Install dependencies:
@@ -74,7 +74,7 @@ Ensure you have:
 This project uses shadcn/ui components. To add new components:
 
 ```bash
-npx shadcn-ui@latest add [component-name]
+npx shadcn@latest add [component-name]
 ```
 
 Available components in the project:

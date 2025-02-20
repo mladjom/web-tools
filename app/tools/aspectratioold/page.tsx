@@ -2,6 +2,6 @@
 
 import AspectRatioCalculator from '@/components/AspectRatioCalculatorOld'
 
-export default function TypographyPage() {
+export default function AspectRatioCalculatorPageOld() {
   return <AspectRatioCalculator />
 }
