@@ -16,17 +16,17 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({ className, ...props }) =
     },
     {
       name: "Typography Generator",
-      href: "/tools/typography",
+      href: "/typography",
       icon: Pilcrow
     },
     {
       name: "Aspect Ratio Calculator",
-      href: "/tools/aspectratio",
+      href: "/aspectratio",
       icon: Proportions
     },
     {
       name: "Aspect Ratio Calculator (Old)",
-      href: "/tools/aspectratioold",
+      href: "/aspectratioold",
       icon: Proportions
     }
   ];

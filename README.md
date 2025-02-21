@@ -2,6 +2,9 @@
 
 A collection of useful web development tools built with Next.js and shadcn/ui components. This project provides various utilities for developers including aspect ratio calculations and typography generation.
 
+![Web Tools](public/og-webtools.jpg)
+
+
 ## 🚀 Features
 
 - **Aspect Ratio Calculator**: Calculate and analyze aspect ratios for responsive design
