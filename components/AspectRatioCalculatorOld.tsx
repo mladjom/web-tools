@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -71,7 +71,7 @@ const AspectRatioCalculator: React.FC = () => {
     return a;
   };
 
-  const analyzeAspectRatio = (width: number, height: number): AspectRatioAnalysis => {
+  const analyzeAspectRatio = useCallback((width: number, height: number): AspectRatioAnalysis => {
     const gcd = getGcd(Math.round(width), Math.round(height));
     const simplified_width = width / gcd;
     const simplified_height = height / gcd;
@@ -90,9 +90,9 @@ const AspectRatioCalculator: React.FC = () => {
       closest_common_ratio: COMMON_RATIOS[closest_ratio],
       difference_from_common: Math.abs(decimal_ratio - closest_ratio)
     };
-  };
+  }, []);
 
-  const calculateLetterboxPillarbox = (
+  const calculateLetterboxPillarbox = useCallback((
     content_width: number,
     content_height: number,
     screen_width: number,
@@ -124,9 +124,9 @@ const AspectRatioCalculator: React.FC = () => {
         type: 'pillarbox'
       };
     }
-  };
+  }, []);
 
-  const suggestCropDimensions = (
+  const suggestCropDimensions = useCallback((
     width: number,
     height: number,
     target_ratio: number
@@ -159,7 +159,7 @@ const AspectRatioCalculator: React.FC = () => {
       cropped_area: new_width * new_height,
       area_preserved: `${((new_width * new_height) / (width * height) * 100).toFixed(1)}%`
     };
-  };
+  }, []);
 
   useEffect(() => {
     const newAnalysis = analyzeAspectRatio(dimensions.width, dimensions.height);
@@ -178,7 +178,14 @@ const AspectRatioCalculator: React.FC = () => {
     setAnalysis(newAnalysis);
     setBoxCalc(newBoxCalc);
     setCropSuggestion(newCropSuggestion);
-  }, [dimensions, screenDimensions, targetRatio]);
+  }, [
+    dimensions, 
+    screenDimensions, 
+    targetRatio, 
+    analyzeAspectRatio, 
+    calculateLetterboxPillarbox, 
+    suggestCropDimensions
+  ]);
 
   return (
     <Card className="max-w-4xl mx-auto">
