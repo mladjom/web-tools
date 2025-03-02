@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pilcrow, Home, Proportions } from 'lucide-react';
+import { Pilcrow, Home, Proportions, Camera } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,11 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({ className, ...props }) =
       name: "Aspect Ratio Calculator",
       href: "/aspectratio",
       icon: Proportions
+    },
+    {
+      name: "Image Processor",
+      href: "imageprocessor",
+      icon: Camera
     },
     {
       name: "Aspect Ratio Calculator (Old)",

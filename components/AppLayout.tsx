@@ -3,7 +3,8 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Wrench } from 'lucide-react';
-import { SidebarNav } from "@/components/SidebarNav";
+import { SidebarNav } from "@/components/ui/SidebarNav";
+import { Footer } from './ui/Footer'; 
 
 import { ReactNode } from 'react';
 
@@ -48,6 +49,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
           {children}
         </main>
       </div>
+      <Footer />
     </div>
   );
 };
