@@ -11,7 +11,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex md:hidden">
             <Sheet>
@@ -30,7 +30,7 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
           </div>
           <div className="flex items-center gap-2">
             <Wrench className="h-5 w-5" />
-            <span className="font-bold">Web Tools</span>
+            <span className="font-bold">Web Design Tools</span>
           </div>
         </div>
       </header>
