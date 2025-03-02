@@ -8,7 +8,7 @@ export const metadata = {
     title: 'Image Processor | Web Tools',
     description: 'Free tool for processing and transforming images.',
     url: 'https://web-tools.milentijevic.com/tools/imageprocessor',
-    images: ['/og-webtools.jpg'],
+    images: ['/images/webtools.webp'],
   },
 };
 

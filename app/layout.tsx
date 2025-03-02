@@ -21,7 +21,7 @@ export const metadata = {
     title: 'Web Tools | Developer Utilities',
     description: 'Free online tools for web developers',
     url: 'https://tools.milentijevic.com/aspectratio',
-    images: ['/og-webtools.jpg'],
+    images: ['/images/webtools.webp'],
   },
 };
 

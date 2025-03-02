@@ -8,7 +8,7 @@ export const metadata = {
     title: 'Aspect Ratio Calculator | Web Tools',
     description: 'Free tool for calculating aspect ratios and more.',
     url: 'https://tools.milentijevic.com/aspectratio',
-    images: ['/og-webtools.jpg'],
+    images: ['/images/webtools.webp'],
   },
 };
 
