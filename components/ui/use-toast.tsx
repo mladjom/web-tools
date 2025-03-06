@@ -19,6 +19,7 @@ export type ToastProps = {
   description?: React.ReactNode
   action?: ToastActionElement
   variant?: "default" | "destructive"
+  onOpenChange?: (open: boolean) => void
 }
 
 type ActionType = {
