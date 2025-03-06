@@ -202,11 +202,15 @@ const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     const [toasts, setToasts] = React.useState<ToastProps[]>([])
   
     React.useEffect(() => {
-      listeners.push((state) => {
+      // Create a compatible listener function
+      const listener = (state: State) => {
         setToasts(state.toasts)
-      })
+      }
+      
+      listeners.push(listener)
+      
       return () => {
-        const index = listeners.indexOf(setToasts)
+        const index = listeners.indexOf(listener)
         if (index > -1) {
           listeners.splice(index, 1)
         }
