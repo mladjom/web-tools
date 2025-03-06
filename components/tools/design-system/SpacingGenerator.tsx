@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDesignSystem } from './DesignSystemContext';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -135,7 +135,7 @@ const SpacingGenerator: React.FC = () => {
               <Button onClick={applyBaseUnitChange}>Apply</Button>
             </div>
             <p className="text-sm text-muted-foreground">
-              The base unit is used to generate the spacing scale.
+              The base unit is used to generate consistent spacing throughout your design system.
             </p>
           </div>
 
@@ -207,18 +207,22 @@ const SpacingGenerator: React.FC = () => {
               </div>
               
               {/* Visual preview */}
-              <div className="bg-muted rounded flex-1 relative">
+              <div className="bg-muted rounded flex-1 relative min-h-[100px]">
                 <div 
-                  className={`bg-primary ${previewType === 'margin' ? 'm' : 'p'}-${index} h-full rounded`}
+                  className="bg-primary h-full rounded flex items-center justify-center text-primary-foreground"
                   style={{
                     ...(previewType === 'margin' 
                       ? { margin: `${value}px` } 
                       : { padding: `${value}px` }),
                   }}
                 >
-                  <div className={`${previewType === 'padding' ? 'bg-background' : ''} h-full rounded flex items-center justify-center text-xs`}>
-                    {value}px
-                  </div>
+                  {previewType === 'padding' ? (
+                    <div className="bg-background rounded h-full w-full flex items-center justify-center">
+                      {value}px
+                    </div>
+                  ) : (
+                    <span>{value}px</span>
+                  )}
                 </div>
               </div>
             </div>

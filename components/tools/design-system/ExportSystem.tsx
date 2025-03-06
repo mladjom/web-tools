@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Download, Copy, FileJson, FileCode, FileX } from 'lucide-react';
+import { Download, Copy, FileJson, FileCode } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 const ExportSystem: React.FC = () => {
@@ -89,7 +89,8 @@ const ExportSystem: React.FC = () => {
       
       css += `  /* Box Shadow */\n`;
       components.boxShadow.forEach((shadow, i) => {
-        css += `  --shadow-${i === 0 ? 'none' : i === 1 ? 'sm' : i === 2 ? 'md' : i === 3 ? 'lg' : i === 4 ? 'xl' : '2xl'}: ${shadow};\n`;
+        const name = i === 0 ? 'none' : i === 1 ? 'sm' : i === 2 ? 'md' : i === 3 ? 'lg' : i === 4 ? 'xl' : '2xl';
+        css += `  --shadow-${name}: ${shadow};\n`;
       });
       css += '\n';
       
@@ -103,7 +104,7 @@ const ExportSystem: React.FC = () => {
     
     // Dark mode
     if (exportOptions.darkMode) {
-      css += `\n@media (prefers-color-scheme: dark) {\n  :root {\n`;
+      css += `\n.dark {\n`;
       
       // Dark colors
       if (exportOptions.colors) {
@@ -112,13 +113,13 @@ const ExportSystem: React.FC = () => {
             // Invert the shade index for dark mode (950 becomes 50, etc.)
             const darkIndex = colorObj.shades.length - 1 - index;
             if (darkIndex >= 0 && darkIndex < colorObj.shades.length) {
-              css += `    --${colorName}-${shade.name}: ${colorObj.shades[darkIndex].value};\n`;
+              css += `  --${colorName}-${shade.name}: ${colorObj.shades[darkIndex].value};\n`;
             }
           });
         });
       }
       
-      css += `  }\n}\n`;
+      css += `}\n`;
     }
     
     return css;
@@ -152,7 +153,7 @@ const ExportSystem: React.FC = () => {
     if (exportOptions.colors) {
       scss += `// Colors\n`;
       Object.entries(colors).forEach(([colorName, colorObj]) => {
-        scss += `${colorName}: (\n`;
+        scss += `$${colorName}: (\n`;
         colorObj.shades.forEach(shade => {
           scss += `  ${shade.name}: ${shade.value},\n`;
         });
@@ -208,7 +209,8 @@ const ExportSystem: React.FC = () => {
       scss += `// Box Shadow\n`;
       scss += `$shadow: (\n`;
       components.boxShadow.forEach((shadow, i) => {
-        scss += `  ${i === 0 ? 'none' : i === 1 ? 'sm' : i === 2 ? 'md' : i === 3 ? 'lg' : i === 4 ? 'xl' : '2xl'}: ${shadow},\n`;
+        const name = i === 0 ? 'none' : i === 1 ? 'sm' : i === 2 ? 'md' : i === 3 ? 'lg' : i === 4 ? 'xl' : '2xl';
+        scss += `  ${name}: ${shadow},\n`;
       });
       scss += `);\n\n`;
       
@@ -294,7 +296,8 @@ module.exports = {
       
       config += `\n      boxShadow: {`;
       components.boxShadow.forEach((shadow, i) => {
-        config += `\n        '${i === 0 ? 'none' : i === 1 ? 'sm' : i === 2 ? 'md' : i === 3 ? 'lg' : i === 4 ? 'xl' : '2xl'}': '${shadow}',`;
+        const name = i === 0 ? 'none' : i === 1 ? 'sm' : i === 2 ? 'md' : i === 3 ? 'lg' : i === 4 ? 'xl' : '2xl';
+        config += `\n        '${name}': '${shadow}',`;
       });
       config += `\n      },`;
       
@@ -534,7 +537,7 @@ module.exports = {
         </div>
         
         <div className="relative">
-          <pre className="p-4 bg-muted rounded-lg overflow-auto font-mono text-sm max-h-[400px]">
+          <pre className="p-4 bg-muted rounded-lg overflow-auto font-mono text-sm flex-1 max-h-[400px]">
             <code>{getOutput()}</code>
           </pre>
           

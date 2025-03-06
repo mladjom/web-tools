@@ -18,13 +18,13 @@ interface TypographySettings {
 
 // Color Types
 interface ColorShade {
-  value: string;
   name: string;
+  value: string;
 }
 
 interface ColorScale {
-  color: string;
   name: string;
+  color: string;
   shades: ColorShade[];
 }
 
@@ -78,7 +78,7 @@ interface DesignSystemContextType extends DesignSystemState {
   updateTypography: (settings: Partial<TypographySettings>) => void;
   updateColors: (settings: Partial<ColorSettings>) => void;
   updateSpacing: (settings: Partial<SpacingSettings>) => void;
-  updateComponents: (settings: Partial<ComponentSettings>) => void;
+  updateComponents: (key: string, value: any) => void;
   exportDesignSystem: () => DesignSystemState;
   resetToDefaults: () => void;
 }
@@ -319,8 +319,25 @@ export const DesignSystemProvider: React.FC<{ children: ReactNode }> = ({ childr
     setSpacing(prev => ({ ...prev, ...settings }));
   };
 
-  const updateComponents = (settings: Partial<ComponentSettings>) => {
-    setComponents(prev => ({ ...prev, ...settings }));
+  const updateComponents = (key: string, value: any) => {
+    setComponents(prev => {
+      const newComponents = { ...prev };
+      
+      if (key === 'borderRadius' || key === 'borderWidth') {
+        if (value.name && value.value) {
+          // @ts-ignore
+          newComponents[key] = { ...newComponents[key], [value.name]: value.value };
+        }
+      } else if (key === 'shadow') {
+        newComponents.boxShadow = [...newComponents.boxShadow, value];
+      } else if (key === 'transition') {
+        if (value.name && value.value) {
+          newComponents.transitions = { ...newComponents.transitions, [value.name]: value.value };
+        }
+      }
+      
+      return newComponents;
+    });
   };
 
   const exportDesignSystem = (): DesignSystemState => {

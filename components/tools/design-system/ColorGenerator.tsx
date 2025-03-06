@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Copy, RefreshCw } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import tinycolor from 'tinycolor2';
 
 const ColorGenerator: React.FC = () => {
   const { colors, updateColors } = useDesignSystem();
@@ -23,27 +22,36 @@ const ColorGenerator: React.FC = () => {
 
   // Function to generate color shades
   const generateShades = (baseHex: string, adjust: { contrast: number; saturation: number; luminance: number }) => {
-    const base = tinycolor(baseHex);
+    // A simple algorithm to generate shades from base color
     const shades: { name: string; value: string }[] = [];
-
+    
     // Create 11 shades (50-950)
     const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
     
+    // For each step, adjust the base color to create a shade
     steps.forEach((step, index) => {
-      let shade = tinycolor(baseHex);
+      // Calculate lightness factor: lighter for lower numbers, darker for higher
+      const lightnessFactor = 1 - (index / (steps.length - 1));
       
-      // Adjust lightness based on step
-      const lightness = 1 - (index / (steps.length - 1));
+      // Adjust the hex color based on the parameters
+      const r = parseInt(baseHex.slice(1, 3), 16);
+      const g = parseInt(baseHex.slice(3, 5), 16);
+      const b = parseInt(baseHex.slice(5, 7), 16);
       
-      // Apply user adjustments
-      const adjustedShade = shade
-        .lighten((lightness * 100) + adjust.luminance)
-        .saturate(adjust.saturation * (index < 5 ? -1 : 1))
-        .toHexString();
-        
+      // Apply lightness factor
+      const lr = Math.min(255, Math.max(0, Math.round(r + (255 - r) * lightnessFactor * (1 + adjust.luminance / 100))));
+      const lg = Math.min(255, Math.max(0, Math.round(g + (255 - g) * lightnessFactor * (1 + adjust.luminance / 100))));
+      const lb = Math.min(255, Math.max(0, Math.round(b + (255 - b) * lightnessFactor * (1 + adjust.luminance / 100))));
+      
+      // Convert back to hex
+      const adjustedHex = '#' + 
+        lr.toString(16).padStart(2, '0') + 
+        lg.toString(16).padStart(2, '0') + 
+        lb.toString(16).padStart(2, '0');
+      
       shades.push({
         name: step.toString(),
-        value: adjustedShade
+        value: adjustedHex
       });
     });
 
@@ -98,10 +106,23 @@ const ColorGenerator: React.FC = () => {
     });
   };
 
+  // Calculate if text should be light or dark based on background
+  const getTextColor = (hex: string): string => {
+    // Convert hex to RGB
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    // Calculate perceived brightness (YIQ equation)
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    
+    return yiq >= 128 ? '#000000' : '#ffffff';
+  };
+
   // Generate CSS for all colors
   const generateCSS = () => {
     let css = `:root {\n`;
-    let darkCss = `  :root.dark {\n`;
+    let darkCss = `  .dark {\n`;
     
     Object.entries(colors).forEach(([key, colorObj]) => {
       colorObj.shades.forEach(shade => {
@@ -114,13 +135,13 @@ const ColorGenerator: React.FC = () => {
       });
     });
     
-    css += darkCss + `  }\n}`;
+    css += `\n` + darkCss + `  }\n}`;
     return css;
   };
 
   // Generate a new random color
   const generateRandomColor = () => {
-    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
     setBaseColor(randomColor);
   };
 
@@ -131,6 +152,10 @@ const ColorGenerator: React.FC = () => {
           <TabsList className="w-full justify-start">
             {Object.keys(colors).map(color => (
               <TabsTrigger key={color} value={color} className="min-w-[100px] capitalize">
+                <div 
+                  className="w-3 h-3 rounded-full mr-2" 
+                  style={{ backgroundColor: colors[color as keyof typeof colors].color }}
+                ></div>
                 {color}
               </TabsTrigger>
             ))}
@@ -184,16 +209,16 @@ const ColorGenerator: React.FC = () => {
                 <div className="space-y-6 pt-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <Label htmlFor="contrast">Contrast</Label>
-                      <span className="text-sm text-muted-foreground">{contrast}</span>
+                      <Label htmlFor="luminance">Luminance</Label>
+                      <span className="text-sm text-muted-foreground">{luminance}</span>
                     </div>
                     <Slider
-                      id="contrast"
+                      id="luminance"
                       min={-50}
                       max={50}
                       step={1}
-                      value={[contrast]}
-                      onValueChange={values => setContrast(values[0])}
+                      value={[luminance]}
+                      onValueChange={values => setLuminance(values[0])}
                       onValueCommit={handleColorAdjustment}
                     />
                   </div>
@@ -216,19 +241,26 @@ const ColorGenerator: React.FC = () => {
                   
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <Label htmlFor="luminance">Luminance</Label>
-                      <span className="text-sm text-muted-foreground">{luminance}</span>
+                      <Label htmlFor="contrast">Contrast</Label>
+                      <span className="text-sm text-muted-foreground">{contrast}</span>
                     </div>
                     <Slider
-                      id="luminance"
+                      id="contrast"
                       min={-50}
                       max={50}
                       step={1}
-                      value={[luminance]}
-                      onValueChange={values => setLuminance(values[0])}
+                      value={[contrast]}
+                      onValueChange={values => setContrast(values[0])}
                       onValueCommit={handleColorAdjustment}
                     />
                   </div>
+                  
+                  <Button
+                    onClick={handleColorAdjustment}
+                    className="w-full"
+                  >
+                    Apply Changes
+                  </Button>
                 </div>
               </div>
 
@@ -239,9 +271,6 @@ const ColorGenerator: React.FC = () => {
                     <div 
                       key={shade.name} 
                       className="flex items-center p-2 rounded-md hover:bg-muted"
-                      style={{
-                        color: tinycolor(shade.value).isDark() ? 'white' : 'black',
-                      }}
                     >
                       <div 
                         className="w-8 h-8 rounded-md mr-3 flex-shrink-0" 

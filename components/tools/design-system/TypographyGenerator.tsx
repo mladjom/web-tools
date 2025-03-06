@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { useToast } from '@/components/ui/useToast'
+import { useToast } from '@/components/ui/use-toast';
 import { useDesignSystem } from './DesignSystemContext';
 
 interface ScaleItem {
@@ -42,7 +42,12 @@ const RATIO_OPTIONS: Record<string, number> = {
 const TypographyGenerator: React.FC = () => {
   const { toast } = useToast();
   const { typography, updateTypography } = useDesignSystem();
-  
+  const [fontFamily, setFontFamily] = useState({
+    body: typography.fontFamily.body,
+    heading: typography.fontFamily.heading,
+    monospace: typography.fontFamily.monospace
+  });
+
   const [output, setOutput] = useState<Output>({
     css: '',
     scss: '',
@@ -103,6 +108,9 @@ const TypographyGenerator: React.FC = () => {
   --base-line-height: ${typography.baseLineHeight};
   --scale-ratio: ${typography.scaleRatio};
   --base-unit: ${typography.baseUnit}px;
+  --font-family-body: ${typography.fontFamily.body};
+  --font-family-heading: ${typography.fontFamily.heading};
+  --font-family-mono: ${typography.fontFamily.monospace};
 
   /* Font Scale with Computed Metrics */
 ${scale.map(s => `
@@ -125,6 +133,9 @@ $base-font-size: ${typography.baseFontSize}px;
 $base-line-height: ${typography.baseLineHeight};
 $scale-ratio: ${typography.scaleRatio};
 $base-unit: ${typography.baseUnit}px;
+$font-family-body: ${typography.fontFamily.body};
+$font-family-heading: ${typography.fontFamily.heading};
+$font-family-mono: ${typography.fontFamily.monospace};
 
 // Font Scale with Computed Metrics
 ${scale.map(s => `
@@ -144,13 +155,15 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
       css: generateCSS(scale),
       scss: generateSCSS(scale),
     });
-    
-    // Update the design system context with the scale
-    updateTypography({
-      ...typography,
-      scale
-    });
-  }, [typography, generateScale, generateCSS, generateSCSS, updateTypography]);
+
+    // Only update if scale has actually changed
+    if (!typography.scale || JSON.stringify(typography.scale) !== JSON.stringify(scale)) {
+      updateTypography({
+        ...typography,
+        scale
+      });
+    }
+  }, [typography.baseFontSize, typography.baseLineHeight, typography.scaleRatio, typography.baseUnit, typography.fontFamily]);
 
   const handleChange = (key: keyof typeof typography, value: string) => {
     const numValue = parseFloat(value);
@@ -160,6 +173,17 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
         [key]: numValue
       });
     }
+  };
+
+  const handleFontFamilyChange = (key: keyof typeof fontFamily, value: string) => {
+    setFontFamily(prev => ({ ...prev, [key]: value }));
+    updateTypography({
+      ...typography,
+      fontFamily: {
+        ...typography.fontFamily,
+        [key]: value
+      }
+    });
   };
 
   const copyToClipboard = (text: string) => {
@@ -186,8 +210,8 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
         </div>
         <div className="space-y-2">
           <Label htmlFor="scaleRatio">Scale Ratio</Label>
-          <Select 
-            value={typography.scaleRatio.toString()} 
+          <Select
+            value={typography.scaleRatio.toString()}
             onValueChange={(value) => handleChange('scaleRatio', value)}
           >
             <SelectTrigger>
@@ -227,6 +251,36 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
         </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="space-y-2">
+          <Label htmlFor="bodyFont">Body Font</Label>
+          <Input
+            id="bodyFont"
+            value={fontFamily.body}
+            onChange={(e) => handleFontFamilyChange('body', e.target.value)}
+            placeholder="Inter, system-ui, sans-serif"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="headingFont">Heading Font</Label>
+          <Input
+            id="headingFont"
+            value={fontFamily.heading}
+            onChange={(e) => handleFontFamilyChange('heading', e.target.value)}
+            placeholder="Inter, system-ui, sans-serif"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="monoFont">Monospace Font</Label>
+          <Input
+            id="monoFont"
+            value={fontFamily.monospace}
+            onChange={(e) => handleFontFamilyChange('monospace', e.target.value)}
+            placeholder="monospace"
+          />
+        </div>
+      </div>
+
       <Tabs defaultValue="preview" className="mt-6">
         <TabsList>
           <TabsTrigger value="preview">Preview</TabsTrigger>
@@ -245,8 +299,9 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
                     <span className="w-24 text-sm text-muted-foreground">{size.rem}rem</span>
                     <span className="text-sm text-muted-foreground">{size.px}px</span>
                   </div>
-                  <div 
-                    style={{ 
+                  <div
+                    style={{
+                      fontFamily: size.step > 2 ? typography.fontFamily.heading : typography.fontFamily.body,
                       fontSize: `${size.rem}rem`,
                       lineHeight: size.lineHeight,
                       letterSpacing: `${size.letterSpacing}em`,
@@ -254,7 +309,7 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
                     }}
                     aria-label={`Text sample for step ${size.step}`}
                   >
-                    The quick brown fox
+                    {size.step > 2 ? 'Heading Typography' : 'The quick brown fox jumps over the lazy dog'}
                   </div>
                   <div className="mt-2 text-sm text-muted-foreground">
                     <div>Line Height: {size.lineHeight}</div>

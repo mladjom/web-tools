@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy, Plus, Trash, Save } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,7 +15,7 @@ const ComponentsGenerator: React.FC = () => {
   const { components, colors, typography, spacing, updateComponents } = useDesignSystem();
   const { toast } = useToast();
   
-  const [activeTab, setActiveTab] = useState<string>('preview');
+  const [activeTab, setActiveTab] = useState<string>('border-radius');
   const [selectedComponent, setSelectedComponent] = useState<string>('button');
   const [newBorderRadius, setNewBorderRadius] = useState<{ name: string; value: string }>({ name: '', value: '' });
   const [newBorderWidth, setNewBorderWidth] = useState<{ name: string; value: string }>({ name: '', value: '' });
@@ -23,255 +23,193 @@ const ComponentsGenerator: React.FC = () => {
   const [newTransition, setNewTransition] = useState<{ name: string; value: string }>({ name: '', value: '' });
 
   // Component style definitions
-  const componentStyles = {
+  const componentPreviewStyles = {
     button: {
-      basic: `
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  font-size: var(--text-0);
-  height: 2.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  transition: var(--transition-default);
-}
-
-.btn-primary {
-  background-color: var(--primary-500);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-600);
-}
-
-.btn-secondary {
-  background-color: var(--secondary-500);
-  color: white;
-}
-
-.btn-outline {
-  background-color: transparent;
-  border: 1px solid var(--neutral-300);
-}
-
-.btn-outline:hover {
-  background-color: var(--neutral-100);
-  border-color: var(--neutral-400);
-}`,
-      tailwind: `
-@layer components {
-  .btn {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 h-10 px-4 py-2;
-  }
-  
-  .btn-primary {
-    @apply bg-primary-500 text-white hover:bg-primary-600;
-  }
-  
-  .btn-secondary {
-    @apply bg-secondary-500 text-white hover:bg-secondary-600;
-  }
-  
-  .btn-outline {
-    @apply border border-neutral-300 bg-transparent hover:bg-neutral-100 hover:border-neutral-400;
-  }
-}`
+      primary: {
+        className: "py-2 px-4 bg-primary text-primary-foreground rounded-md",
+        text: "Primary Button"
+      },
+      secondary: {
+        className: "py-2 px-4 bg-secondary text-secondary-foreground rounded-md",
+        text: "Secondary Button"
+      },
+      outline: {
+        className: "py-2 px-4 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md",
+        text: "Outline Button"
+      },
+      ghost: {
+        className: "py-2 px-4 hover:bg-accent hover:text-accent-foreground rounded-md",
+        text: "Ghost Button"
+      }
     },
     input: {
-      basic: `
-.input {
-  display: flex;
-  height: 2.5rem;
-  width: 100%;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--neutral-300);
-  background-color: transparent;
-  padding: 0.5rem 0.75rem;
-  font-size: var(--text-0);
-  transition: var(--transition-default);
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 2px var(--primary-100);
-}
-
-.input::placeholder {
-  color: var(--neutral-400);
-}
-
-.input-error {
-  border-color: var(--error-500);
-}
-
-.input-error:focus {
-  border-color: var(--error-500);
-  box-shadow: 0 0 0 2px var(--error-100);
-}`,
-      tailwind: `
-@layer components {
-  .input {
-    @apply h-10 w-full rounded-md border border-neutral-300 bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-  }
-  
-  .input-error {
-    @apply border-error-500 focus-visible:ring-error-500;
-  }
-}`
-    },
-    dropdown: {
-      basic: `
-.select {
-  position: relative;
-  width: 100%;
-}
-
-.select-trigger {
-  display: flex;
-  height: 2.5rem;
-  width: 100%;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--neutral-300);
-  background-color: transparent;
-  padding: 0 0.75rem;
-  font-size: var(--text-0);
-  transition: var(--transition-default);
-}
-
-.select-trigger:focus {
-  outline: none;
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 2px var(--primary-100);
-}
-
-.select-content {
-  overflow: hidden;
-  background-color: white;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--neutral-200);
-  box-shadow: var(--shadow-md);
-  width: var(--select-trigger-width);
-  max-height: var(--radix-popover-content-available-height);
-  z-index: 50;
-}
-
-.select-item {
-  font-size: var(--text-0);
-  line-height: 1;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  height: 2rem;
-  padding: 0 0.5rem;
-  position: relative;
-  user-select: none;
-}
-
-.select-item:hover {
-  background-color: var(--neutral-100);
-  color: inherit;
-}
-
-.select-item[data-state="checked"] {
-  background-color: var(--primary-100);
-  color: var(--primary-900);
-}`,
-      tailwind: `
-@layer components {
-  .select {
-    @apply relative w-full;
-  }
-  
-  .select-trigger {
-    @apply flex h-10 w-full items-center justify-between rounded-md border border-neutral-300 bg-transparent px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
-  }
-  
-  .select-content {
-    @apply overflow-hidden rounded-md border border-neutral-200 bg-white text-neutral-950 shadow-md animate-in fade-in-80 zoom-in-95;
-  }
-  
-  .select-item {
-    @apply relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-neutral-100 focus:text-neutral-900 data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
-  }
-}`
+      default: {
+        className: "h-10 w-full rounded-md border border-input bg-background px-3 py-2 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        placeholder: "Default input"
+      },
+      error: {
+        className: "h-10 w-full rounded-md border border-destructive bg-background px-3 py-2 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive",
+        placeholder: "Error input"
+      }
     },
     card: {
-      basic: `
-.card {
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--neutral-200);
-  background-color: white;
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.card-header {
-  padding: 1.5rem 1.5rem 0 1.5rem;
-}
-
-.card-title {
-  font-size: var(--text-1);
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.card-description {
-  color: var(--neutral-500);
-  font-size: var(--text-0);
-}
-
-.card-content {
-  padding: 1.5rem;
-}
-
-.card-footer {
-  padding: 0 1.5rem 1.5rem 1.5rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}`,
-      tailwind: `
-@layer components {
-  .card {
-    @apply rounded-lg border border-neutral-200 bg-white shadow-sm overflow-hidden;
-  }
-  
-  .card-header {
-    @apply p-6 pb-0;
-  }
-  
-  .card-title {
-    @apply text-xl font-semibold mb-2;
-  }
-  
-  .card-description {
-    @apply text-neutral-500;
-  }
-  
-  .card-content {
-    @apply p-6;
-  }
-  
-  .card-footer {
-    @apply px-6 pb-6 flex justify-end gap-2;
-  }
-}`
+      default: {
+        className: "w-full rounded-lg border bg-card text-card-foreground shadow",
+        title: "Card Title",
+        content: "This is a sample card component with default styling."
+      }
     }
   };
 
-  const handleSave = () => {
-    // Save the component styles
+  // Handle border radius input
+  const handleBorderRadiusNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewBorderRadius(prev => ({ ...prev, name: e.target.value }));
+  };
+
+  const handleBorderRadiusValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewBorderRadius(prev => ({ ...prev, value: e.target.value }));
+  };
+
+  // Handle border width input
+  const handleBorderWidthNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewBorderWidth(prev => ({ ...prev, name: e.target.value }));
+  };
+
+  const handleBorderWidthValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewBorderWidth(prev => ({ ...prev, value: e.target.value }));
+  };
+
+  // Handle shadow input
+  const handleShadowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewShadow(e.target.value);
+  };
+
+  // Handle transition input
+  const handleTransitionNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTransition(prev => ({ ...prev, name: e.target.value }));
+  };
+
+  const handleTransitionValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTransition(prev => ({ ...prev, value: e.target.value }));
+  };
+
+  // Add new border radius
+  const addBorderRadius = () => {
+    if (newBorderRadius.name && newBorderRadius.value) {
+      updateComponents('borderRadius', newBorderRadius);
+      setNewBorderRadius({ name: '', value: '' });
+      toast({
+        title: "Border radius added",
+        description: `Added ${newBorderRadius.name}: ${newBorderRadius.value}`,
+      });
+    } else {
+      toast({
+        title: "Invalid input",
+        description: "Both name and value are required",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Add new border width
+  const addBorderWidth = () => {
+    if (newBorderWidth.name && newBorderWidth.value) {
+      updateComponents('borderWidth', newBorderWidth);
+      setNewBorderWidth({ name: '', value: '' });
+      toast({
+        title: "Border width added",
+        description: `Added ${newBorderWidth.name}: ${newBorderWidth.value}`,
+      });
+    } else {
+      toast({
+        title: "Invalid input",
+        description: "Both name and value are required",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Add new shadow
+  const addShadow = () => {
+    if (newShadow) {
+      updateComponents('shadow', newShadow);
+      setNewShadow('');
+      toast({
+        title: "Shadow added",
+        description: "New shadow value has been added",
+      });
+    } else {
+      toast({
+        title: "Invalid input",
+        description: "Shadow value is required",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Add new transition
+  const addTransition = () => {
+    if (newTransition.name && newTransition.value) {
+      updateComponents('transition', newTransition);
+      setNewTransition({ name: '', value: '' });
+      toast({
+        title: "Transition added",
+        description: `Added ${newTransition.name}: ${newTransition.value}`,
+      });
+    } else {
+      toast({
+        title: "Invalid input",
+        description: "Both name and value are required",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Generate CSS for component tokens
+  const generateComponentCSS = () => {
+    let css = `:root {\n`;
+    
+    // Border radius
+    css += `  /* Border Radius */\n`;
+    Object.entries(components.borderRadius).forEach(([name, value]) => {
+      css += `  --radius-${name}: ${value};\n`;
+    });
+    
+    // Border width
+    css += `\n  /* Border Width */\n`;
+    Object.entries(components.borderWidth).forEach(([name, value]) => {
+      css += `  --border-${name}: ${value};\n`;
+    });
+    
+    // Box shadows
+    css += `\n  /* Box Shadows */\n`;
+    components.boxShadow.forEach((shadow, index) => {
+      const name = index === 0 ? 'none' : 
+                   index === 1 ? 'sm' : 
+                   index === 2 ? 'md' : 
+                   index === 3 ? 'lg' : 
+                   index === 4 ? 'xl' : 
+                   index === 5 ? '2xl' : 
+                   `shadow-${index}`;
+      css += `  --shadow-${name}: ${shadow};\n`;
+    });
+    
+    // Transitions
+    css += `\n  /* Transitions */\n`;
+    Object.entries(components.transitions).forEach(([name, value]) => {
+      css += `  --transition-${name}: ${value};\n`;
+    });
+    
+    css += `}`;
+    return css;
+  };
+
+  // Copy CSS to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
     toast({
-      title: "Component styles saved",
-      description: "Your component styles have been saved successfully.",
-      status: "success",
+      title: "Copied!",
+      description: "CSS copied to clipboard",
     });
   };
 
@@ -279,12 +217,19 @@ const ComponentsGenerator: React.FC = () => {
     <div>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="preview">Preview</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="preview">Component Preview</TabsTrigger>
+          <TabsTrigger value="border-radius">Border Radius</TabsTrigger>
+          <TabsTrigger value="border-width">Border Width</TabsTrigger>
+          <TabsTrigger value="shadows">Shadows</TabsTrigger>
+          <TabsTrigger value="transitions">Transitions</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="preview">
           <div className="space-y-8">
             <Card>
+              <CardHeader>
+                <CardTitle>Component Preview</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="flex flex-col space-y-4">
                   <Label htmlFor="component">Component</Label>
@@ -295,77 +240,321 @@ const ComponentsGenerator: React.FC = () => {
                     <SelectContent>
                       <SelectItem value="button">Button</SelectItem>
                       <SelectItem value="input">Input</SelectItem>
-                      <SelectItem value="dropdown">Dropdown</SelectItem>
                       <SelectItem value="card">Card</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="mt-8">
+                  {selectedComponent === 'button' && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Button Variants</h3>
+                      <div className="flex flex-wrap gap-4">
+                        <button className={componentPreviewStyles.button.primary.className}>
+                          {componentPreviewStyles.button.primary.text}
+                        </button>
+                        <button className={componentPreviewStyles.button.secondary.className}>
+                          {componentPreviewStyles.button.secondary.text}
+                        </button>
+                        <button className={componentPreviewStyles.button.outline.className}>
+                          {componentPreviewStyles.button.outline.text}
+                        </button>
+                        <button className={componentPreviewStyles.button.ghost.className}>
+                          {componentPreviewStyles.button.ghost.text}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedComponent === 'input' && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Input Variants</h3>
+                      <div className="space-y-4">
+                        <input 
+                          className={componentPreviewStyles.input.default.className}
+                          placeholder={componentPreviewStyles.input.default.placeholder}
+                        />
+                        <input 
+                          className={componentPreviewStyles.input.error.className}
+                          placeholder={componentPreviewStyles.input.error.placeholder}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedComponent === 'card' && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Card Component</h3>
+                      <div className={componentPreviewStyles.card.default.className}>
+                        <div className="p-6">
+                          <h3 className="text-lg font-semibold mb-2">{componentPreviewStyles.card.default.title}</h3>
+                          <p>{componentPreviewStyles.card.default.content}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
-        <TabsContent value="settings">
-          <div className="space-y-8">
-            <Card>
-              <CardContent>
-                <div className="flex flex-col space-y-4">
-                  <Label htmlFor="borderRadius">Border Radius</Label>
-                  <Input
-                    id="borderRadius"
-                    value={newBorderRadius.value}
-                    onChange={(e) => setNewBorderRadius({ ...newBorderRadius, value: e.target.value })}
-                    placeholder="Enter border radius"
-                  />
-                  <Button onClick={() => updateComponents('borderRadius', newBorderRadius)}>Add Border Radius</Button>
+        
+        <TabsContent value="border-radius">
+          <Card>
+            <CardHeader>
+              <CardTitle>Border Radius</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="borderRadiusName">Name</Label>
+                    <Input
+                      id="borderRadiusName"
+                      value={newBorderRadius.name}
+                      onChange={handleBorderRadiusNameChange}
+                      placeholder="e.g., sm, md, lg"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="borderRadiusValue">Value</Label>
+                    <Input
+                      id="borderRadiusValue"
+                      value={newBorderRadius.value}
+                      onChange={handleBorderRadiusValueChange}
+                      placeholder="e.g., 0.25rem, 8px"
+                    />
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <div className="flex flex-col space-y-4">
-                  <Label htmlFor="borderWidth">Border Width</Label>
-                  <Input
-                    id="borderWidth"
-                    value={newBorderWidth.value}
-                    onChange={(e) => setNewBorderWidth({ ...newBorderWidth, value: e.target.value })}
-                    placeholder="Enter border width"
-                  />
-                  <Button onClick={() => updateComponents('borderWidth', newBorderWidth)}>Add Border Width</Button>
+                <Button onClick={addBorderRadius} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Border Radius
+                </Button>
+                
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-2">Current Border Radius Tokens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.entries(components.borderRadius).map(([name, value]) => (
+                      <div 
+                        key={name} 
+                        className="border rounded-md p-4 flex flex-col"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            <span className="font-medium">radius-{name}</span>
+                            <span className="text-sm text-muted-foreground ml-2">{value}</span>
+                          </div>
+                        </div>
+                        
+                        <div 
+                          className="bg-primary h-16 w-full" 
+                          style={{ borderRadius: value }}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <div className="flex flex-col space-y-4">
-                  <Label htmlFor="shadow">Shadow</Label>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="border-width">
+          <Card>
+            <CardHeader>
+              <CardTitle>Border Width</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="borderWidthName">Name</Label>
+                    <Input
+                      id="borderWidthName"
+                      value={newBorderWidth.name}
+                      onChange={handleBorderWidthNameChange}
+                      placeholder="e.g., thin, medium, thick"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="borderWidthValue">Value</Label>
+                    <Input
+                      id="borderWidthValue"
+                      value={newBorderWidth.value}
+                      onChange={handleBorderWidthValueChange}
+                      placeholder="e.g., 1px, 2px"
+                    />
+                  </div>
+                </div>
+                <Button onClick={addBorderWidth} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Border Width
+                </Button>
+                
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-2">Current Border Width Tokens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.entries(components.borderWidth).map(([name, value]) => (
+                      <div 
+                        key={name} 
+                        className="border rounded-md p-4 flex flex-col"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            <span className="font-medium">border-{name}</span>
+                            <span className="text-sm text-muted-foreground ml-2">{value}</span>
+                          </div>
+                        </div>
+                        
+                        <div 
+                          className="bg-background h-16 w-full rounded-md" 
+                          style={{ border: `${value} solid currentColor` }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="shadows">
+          <Card>
+            <CardHeader>
+              <CardTitle>Box Shadows</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="shadow">Shadow Value</Label>
                   <Input
                     id="shadow"
                     value={newShadow}
-                    onChange={(e) => setNewShadow(e.target.value)}
-                    placeholder="Enter shadow"
+                    onChange={handleShadowChange}
+                    placeholder="e.g., 0 1px 3px rgba(0,0,0,0.12)"
                   />
-                  <Button onClick={() => updateComponents('shadow', newShadow)}>Add Shadow</Button>
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <div className="flex flex-col space-y-4">
-                  <Label htmlFor="transition">Transition</Label>
-                  <Input
-                    id="transition"
-                    value={newTransition.value}
-                    onChange={(e) => setNewTransition({ ...newTransition, value: e.target.value })}
-                    placeholder="Enter transition"
-                  />
-                  <Button onClick={() => updateComponents('transition', newTransition)}>Add Transition</Button>
+                <Button onClick={addShadow} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Shadow
+                </Button>
+                
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-2">Current Shadow Tokens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {components.boxShadow.map((shadow, index) => {
+                      const name = index === 0 ? 'none' : 
+                                   index === 1 ? 'sm' : 
+                                   index === 2 ? 'md' : 
+                                   index === 3 ? 'lg' : 
+                                   index === 4 ? 'xl' : 
+                                   index === 5 ? '2xl' : 
+                                   `shadow-${index}`;
+                      return (
+                        <div 
+                          key={index} 
+                          className="border rounded-md p-4 flex flex-col"
+                        >
+                          <div className="flex justify-between items-center mb-2">
+                            <div>
+                              <span className="font-medium">shadow-{name}</span>
+                              <span className="text-sm text-muted-foreground ml-2 truncate max-w-[150px]">{shadow}</span>
+                            </div>
+                          </div>
+                          
+                          <div 
+                            className="bg-background h-16 w-full rounded-md" 
+                            style={{ boxShadow: shadow }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Button onClick={handleSave}>Save</Button>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="transitions">
+          <Card>
+            <CardHeader>
+              <CardTitle>Transitions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="transitionName">Name</Label>
+                    <Input
+                      id="transitionName"
+                      value={newTransition.name}
+                      onChange={handleTransitionNameChange}
+                      placeholder="e.g., fast, slow"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="transitionValue">Value</Label>
+                    <Input
+                      id="transitionValue"
+                      value={newTransition.value}
+                      onChange={handleTransitionValueChange}
+                      placeholder="e.g., all 150ms ease"
+                    />
+                  </div>
+                </div>
+                <Button onClick={addTransition} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Transition
+                </Button>
+                
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-2">Current Transition Tokens</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {Object.entries(components.transitions).map(([name, value]) => (
+                      <div 
+                        key={name} 
+                        className="border rounded-md p-4 flex flex-col"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            <span className="font-medium">transition-{name}</span>
+                            <span className="text-sm text-muted-foreground ml-2">{value}</span>
+                          </div>
+                        </div>
+                        
+                        <div 
+                          className="bg-primary h-16 w-full rounded-md cursor-pointer hover:scale-105"
+                          style={{ transition: value }}
+                        />
+                        <span className="text-xs text-center mt-2 text-muted-foreground">Hover to see transition</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
+
+      <div className="mt-8 space-y-4">
+        <Label>Component Tokens CSS</Label>
+        <div className="flex items-start gap-2">
+          <pre className="p-4 bg-muted rounded-lg overflow-auto font-mono text-sm flex-1 max-h-[300px]">
+            <code>{generateComponentCSS()}</code>
+          </pre>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => copyToClipboard(generateComponentCSS())}
+            aria-label="Copy CSS to clipboard"
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

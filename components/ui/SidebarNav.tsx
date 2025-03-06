@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pilcrow, Home, Proportions, Camera } from 'lucide-react';
+import { Pilcrow, Home, Proportions, Camera, Palette } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +28,11 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({ className, ...props }) =
       name: "Image Processor",
       href: "imageprocessor",
       icon: Camera
+    },
+    {
+      name: "Design System Generator",
+      href: "/design-system-generator",
+      icon: Palette
     },
     {
       name: "Aspect Ratio Calculator (Old)",
