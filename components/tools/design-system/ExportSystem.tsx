@@ -4,11 +4,18 @@ import React, { useState } from 'react';
 import { useDesignSystem } from './DesignSystemContext';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Download, Copy, FileJson, FileCode } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+
+// Define types for color shades
+interface ColorShade {
+  name: string;
+  value: string;
+}
+
 
 const ExportSystem: React.FC = () => {
   const { typography, colors, spacing, components, exportDesignSystem } = useDesignSystem();
@@ -51,7 +58,7 @@ const ExportSystem: React.FC = () => {
     if (exportOptions.colors) {
       css += `  /* Colors */\n`;
       Object.entries(colors).forEach(([colorName, colorObj]) => {
-        colorObj.shades.forEach(shade => {
+        colorObj.shades.forEach((shade: ColorShade) => {
           css += `  --${colorName}-${shade.name}: ${shade.value};\n`;
         });
       });
@@ -109,7 +116,7 @@ const ExportSystem: React.FC = () => {
       // Dark colors
       if (exportOptions.colors) {
         Object.entries(colors).forEach(([colorName, colorObj]) => {
-          colorObj.shades.forEach((shade, index) => {
+          colorObj.shades.forEach((shade: ColorShade, index: number) => {
             // Invert the shade index for dark mode (950 becomes 50, etc.)
             const darkIndex = colorObj.shades.length - 1 - index;
             if (darkIndex >= 0 && darkIndex < colorObj.shades.length) {
@@ -154,7 +161,7 @@ const ExportSystem: React.FC = () => {
       scss += `// Colors\n`;
       Object.entries(colors).forEach(([colorName, colorObj]) => {
         scss += `$${colorName}: (\n`;
-        colorObj.shades.forEach(shade => {
+        colorObj.shades.forEach((shade: ColorShade) => {
           scss += `  ${shade.name}: ${shade.value},\n`;
         });
         scss += `);\n\n`;
@@ -257,7 +264,7 @@ module.exports = {
       config += `\n      colors: {`;
       Object.entries(colors).forEach(([colorName, colorObj]) => {
         config += `\n        ${colorName}: {`;
-        colorObj.shades.forEach(shade => {
+        colorObj.shades.forEach((shade: ColorShade) => {
           config += `\n          '${shade.name}': '${shade.value}',`;
         });
         config += `\n        },`;
@@ -324,7 +331,8 @@ module.exports = {
     const systemData = exportDesignSystem();
     
     // Filter data based on export options
-    const filteredData: Record<string, any> = {};
+    type FilteredData = Partial<ReturnType<typeof exportDesignSystem>>;
+    const filteredData: FilteredData = {};
     
     if (exportOptions.typography) {
       filteredData.typography = systemData.typography;

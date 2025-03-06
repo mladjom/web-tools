@@ -3,6 +3,19 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Typography Types
+interface ScaleItem {
+  step: number;
+  rem: string;
+  px: string;
+  lineHeight: string;
+  letterSpacing: string;
+  rhythm: {
+    single: string;
+    half: string;
+    double: string;
+  };
+}
+
 interface TypographySettings {
   baseFontSize: number;
   baseLineHeight: number;
@@ -13,7 +26,7 @@ interface TypographySettings {
     heading: string;
     monospace: string;
   };
-  scale?: any[]; // Will be populated by the typography generator
+  scale?: ScaleItem[]; // Will be populated by the typography generator
 }
 
 // Color Types
@@ -54,6 +67,21 @@ interface SpacingSettings {
 }
 
 // Component Types
+interface BorderRadiusValue {
+  name: string;
+  value: string;
+}
+
+interface BorderWidthValue {
+  name: string;
+  value: string;
+}
+
+interface TransitionValue {
+  name: string;
+  value: string;
+}
+
 interface ComponentSettings {
   borderRadius: Record<string, string>;
   borderWidth: Record<string, string>;
@@ -62,6 +90,7 @@ interface ComponentSettings {
     default: string;
     slow: string;
     fast: string;
+    [key: string]: string;
   };
 }
 
@@ -78,7 +107,7 @@ interface DesignSystemContextType extends DesignSystemState {
   updateTypography: (settings: Partial<TypographySettings>) => void;
   updateColors: (settings: Partial<ColorSettings>) => void;
   updateSpacing: (settings: Partial<SpacingSettings>) => void;
-  updateComponents: (key: string, value: any) => void;
+  updateComponents: (key: string, value: BorderRadiusValue | BorderWidthValue | string | TransitionValue) => void;
   exportDesignSystem: () => DesignSystemState;
   resetToDefaults: () => void;
 }
@@ -319,19 +348,20 @@ export const DesignSystemProvider: React.FC<{ children: ReactNode }> = ({ childr
     setSpacing(prev => ({ ...prev, ...settings }));
   };
 
-  const updateComponents = (key: string, value: any) => {
+  const updateComponents = (key: string, value: BorderRadiusValue | BorderWidthValue | string | TransitionValue) => {
     setComponents(prev => {
       const newComponents = { ...prev };
       
       if (key === 'borderRadius' || key === 'borderWidth') {
-        if (value.name && value.value) {
-          // @ts-ignore
+        if (typeof value === 'object' && 'name' in value && 'value' in value) {
           newComponents[key] = { ...newComponents[key], [value.name]: value.value };
         }
       } else if (key === 'shadow') {
-        newComponents.boxShadow = [...newComponents.boxShadow, value];
+        if (typeof value === 'string') {
+          newComponents.boxShadow = [...newComponents.boxShadow, value];
+        }
       } else if (key === 'transition') {
-        if (value.name && value.value) {
+        if (typeof value === 'object' && 'name' in value && 'value' in value) {
           newComponents.transitions = { ...newComponents.transitions, [value.name]: value.value };
         }
       }

@@ -47,12 +47,14 @@ const TypographyGenerator: React.FC = () => {
     heading: typography.fontFamily.heading,
     monospace: typography.fontFamily.monospace
   });
-
+  
   const [output, setOutput] = useState<Output>({
     css: '',
     scss: '',
     scale: [],
   });
+  
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const calculateLineHeight = useCallback((fontSize: number): number => {
     if (fontSize < 16) return 1.6;
@@ -99,7 +101,7 @@ const TypographyGenerator: React.FC = () => {
       });
     }
     return scale;
-  }, [typography, calculateLineHeight, calculateLetterSpacing, calculateRhythm]);
+  }, [typography.baseFontSize, typography.baseLineHeight, typography.scaleRatio, typography.baseUnit, calculateLineHeight, calculateLetterSpacing, calculateRhythm]);
 
   const generateCSS = useCallback((scale: ScaleItem[]): string => {
     return `:root {
@@ -149,21 +151,38 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
   }, [typography]);
 
   useEffect(() => {
+    if (isGenerating) return;
+    
+    setIsGenerating(true);
+    
     const scale = generateScale();
     setOutput({
       scale,
       css: generateCSS(scale),
       scss: generateSCSS(scale),
     });
-
-    // Only update if scale has actually changed
+    
+    // Only update the context if the scale has actually changed
     if (!typography.scale || JSON.stringify(typography.scale) !== JSON.stringify(scale)) {
       updateTypography({
         ...typography,
         scale
       });
     }
-  }, [typography.baseFontSize, typography.baseLineHeight, typography.scaleRatio, typography.baseUnit, typography.fontFamily]);
+    
+    setIsGenerating(false);
+  }, [
+    typography.baseFontSize,
+    typography.baseLineHeight,
+    typography.scaleRatio, 
+    typography.baseUnit,
+    typography.fontFamily,
+    generateScale,
+    generateCSS,
+    generateSCSS,
+    updateTypography,
+    isGenerating
+  ]);
 
   const handleChange = (key: keyof typeof typography, value: string) => {
     const numValue = parseFloat(value);
@@ -210,8 +229,8 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
         </div>
         <div className="space-y-2">
           <Label htmlFor="scaleRatio">Scale Ratio</Label>
-          <Select
-            value={typography.scaleRatio.toString()}
+          <Select 
+            value={typography.scaleRatio.toString()} 
             onValueChange={(value) => handleChange('scaleRatio', value)}
           >
             <SelectTrigger>
@@ -299,8 +318,8 @@ $rhythm-${s.step}-double: ${s.rhythm.double}rem;`).join('\n')}`;
                     <span className="w-24 text-sm text-muted-foreground">{size.rem}rem</span>
                     <span className="text-sm text-muted-foreground">{size.px}px</span>
                   </div>
-                  <div
-                    style={{
+                  <div 
+                    style={{ 
                       fontFamily: size.step > 2 ? typography.fontFamily.heading : typography.fontFamily.body,
                       fontSize: `${size.rem}rem`,
                       lineHeight: size.lineHeight,

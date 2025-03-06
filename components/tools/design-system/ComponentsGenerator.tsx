@@ -7,12 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Plus, Trash, Save } from 'lucide-react';
+import { Copy, Plus } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ComponentsGenerator: React.FC = () => {
-  const { components, colors, typography, spacing, updateComponents } = useDesignSystem();
+  const { components, updateComponents } = useDesignSystem();
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState<string>('border-radius');

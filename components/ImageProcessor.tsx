@@ -1,11 +1,10 @@
 "use client"
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Camera, Upload, Download, Trash2, Crop, Image as ImageIcon, Repeat } from 'lucide-react';
+import { Camera, Download, Trash2, Image as ImageIcon, Repeat } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/useToast";
@@ -217,10 +216,6 @@ const ImageProcessor: React.FC = () => {
         setTargetWidth(Math.round(value * aspectRatio));
       }
     }
-  };
-
-  const getSelectedImage = () => {
-    return processedImages.find(img => img.id === selectedImageId);
   };
 
   return (
