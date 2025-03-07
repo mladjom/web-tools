@@ -20,7 +20,7 @@ export const metadata = {
   openGraph: {
     title: 'Web Tools | Developer Utilities',
     description: 'Free online tools for web developers',
-    url: 'https://tools.milentijevic.com/aspectratio',
+    url: 'https://tools.milentijevic.com/',
     images: ['/og-webtools.jpg'],
   },
 };
