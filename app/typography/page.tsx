@@ -9,7 +9,7 @@ export const metadata = {
     title: 'Web Tools | Aspect Ratio Calculator',
     description: 'Free tool for generating responsive typography .',
     url: 'https://tools.milentijevic.com/typography',
-    images: ['/og-typography.webp'],
+    images: ['/og-webtools.webp'],
   },
 };
 

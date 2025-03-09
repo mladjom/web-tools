@@ -21,7 +21,7 @@ export const metadata = {
     title: 'Web Tools | Developer Utilities',
     description: 'Free online tools for web developers',
     url: 'https://tools.milentijevic.com/',
-    images: ['/og-webtools.jpg'],
+    images: ['/og-webtools.webp'],
   },
 };
 
