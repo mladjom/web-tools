@@ -1,26 +1,64 @@
-# Web Tools Project
+# Web Tools
 
-A collection of useful web development tools built with Next.js and shadcn/ui components. This project provides various utilities for developers including aspect ratio calculations and typography generation.
+A comprehensive collection of web development tools built with Next.js and shadcn/ui components.
 
 ![Web Tools](public/og-webtools.jpg)
 
-
 ## 🚀 Features
 
-- **Aspect Ratio Calculator**: Calculate and analyze aspect ratios for responsive design
-  - Analyze dimensions and ratios
-  - Calculate letterbox/pillarbox dimensions
-  - Generate crop suggestions
-  - Preview results visually
+### Aspect Ratio Calculator
+- Calculate and analyze aspect ratios for responsive design
+- Determine letterbox/pillarbox dimensions
+- Generate crop suggestions for different aspect ratios
+- Visual preview of results
 
-- **Typography Generator**: Create and preview typography settings
-  - Generate responsive font sizes
-  - Preview text in different contexts
-  - Export typography configurations
+### Typography Generator
+- Create responsive typography systems
+- Generate font scales based on mathematical ratios
+- Calculate ideal line heights and letter spacing
+- Export to CSS or SCSS
 
-## Live Demo
+### Image Processor
+- Upload, resize, and transform images
+- Maintain aspect ratios or crop to specific dimensions
+- Convert between formats (JPEG, PNG, WebP)
+- Control quality and file size
 
-[Web Tools](https://web-tools-5r4qhe2bz-mladjoms-projects.vercel.app/) 
+### Avatar Generator
+- Create custom avatars for profiles and applications
+- Generate text-based avatars with initials or emoji
+- Customize colors, patterns, and shapes
+- Upload and crop images for profile pictures
+
+### Design System Generator
+- Create complete design systems with consistent tokens
+- Generate typography scales, color palettes, and spacing
+- Define component tokens (border radius, shadows, etc.)
+- Export to various formats (CSS, SCSS, Tailwind)
+
+## 📦 Project Structure
+
+```
+├── app                   # Next.js app directory
+│   ├── aspectratio       # Aspect ratio calculator page
+│   ├── avatar-generator  # Avatar generator page
+│   ├── design-system-generator # Design system generator page
+│   ├── imageprocessor    # Image processor page
+│   ├── typography        # Typography generator page
+│   ├── globals.css       # Global styles
+│   └── layout.tsx        # Root layout
+├── components
+│   ├── AppLayout.tsx     # Main application layout
+│   ├── AspectRatioCalculator.tsx 
+│   ├── ImageProcessor.tsx
+│   ├── TypographyGenerator.tsx
+│   ├── tools             # Tool-specific components
+│   │   ├── AvatarGenerator.tsx
+│   │   └── design-system # Design system components
+│   └── ui                # UI components (shadcn/ui)
+├── lib                   # Utility functions
+└── public                # Static assets
+```
 
 ## 🛠️ Tech Stack
 
@@ -28,63 +66,16 @@ A collection of useful web development tools built with Next.js and shadcn/ui co
 - [shadcn/ui](https://ui.shadcn.com/) - Component library
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
-
-## 📦 Project Structure
-
-```
-├── app
-│   ├── favicon.ico
-│   ├── globals.css
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── tools
-│       ├── aspectratio
-│       │   └── page.tsx
-│       ├── aspectratioold
-│       │   └── page.tsx
-│       └── typography
-│           ├── loading.tsx
-│           └── page.tsx
-├── components
-│   ├── AppLayout.tsx
-│   ├── AspectRatioCalculatorOld.tsx
-│   ├── AspectRatioCalculator.tsx
-│   ├── SidebarNav.tsx
-│   ├── TypographyGenerator.tsx
-│   └── ui
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── container.tsx
-│       ├── input.tsx
-│       ├── label.tsx
-│       ├── select.tsx
-│       ├── sheet.tsx
-│       ├── skeleton.tsx
-│       ├── tabs.tsx
-│       ├── toast.tsx
-│       ├── tooltip.tsx
-│       └── useToast.tsx
-├── components.json
-├── eslint.config.mjs
-├── hooks
-├── lib
-│   └── utils.ts
-├── LICENCE.md
-├── next.config.ts
-├── package.json
-├── postcss.config.mjs
-├── public
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
-├── README.md
-├── tailwind.config.ts
-└── tsconfig.json
-```
+- [Lucide React](https://lucide.dev/) - Icon library
 
 ## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18.x or later
+- npm 9.x or later
+
+### Installation
 
 1. Clone the repository:
 ```bash
@@ -102,12 +93,6 @@ npm run dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## 📝 Environment Setup
-
-Ensure you have:
-- Node.js 18.x or later
-- npm 9.x or later
 
 ## 🔧 Available Scripts
 
@@ -134,6 +119,14 @@ Available components in the project:
 - Tabs
 - Toast
 - Tooltip
+- And many more...
+
+## 📄 Documentation
+
+For detailed documentation of each component, please refer to:
+
+- [Components Reference](./COMPONENTS.md) - Detailed information about each component
+- [Avatar Generator](./AVATAR-GENERATOR.md) - Specific documentation for the Avatar Generator
 
 ## 🤝 Contributing
 
@@ -145,7 +138,7 @@ Available components in the project:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENCE.md) file for details.
 
 ## 🙏 Acknowledgments
 
