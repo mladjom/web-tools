@@ -2,7 +2,7 @@
 
 A comprehensive collection of web development tools built with Next.js and shadcn/ui components.
 
-![Web Tools](public/og-webtools.jpg)
+![Web Tools](public/og-webtools.webp)
 
 ## 🚀 Features
 
